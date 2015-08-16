@@ -1,10 +1,3 @@
-console.log("hi");
-
-var ig = require('instagram-node').instagram();
-var mysql = require('./config/mysql.js')
-
-ig.use({ access_token: '1733274060.1fb234f.f33566c1baa44262843c33aaed2857ea' });
-
 var posts = [ { attribution: null,
     tags: [],
     type: 'image',
@@ -645,14 +638,6 @@ var posts = [ { attribution: null,
        id: '12884878',
        full_name: 'Marbee Moo, Olive & Taffy' } } ];
 
-
-
-
-
-
-
-
-
 var post = {
     "meta": {
         "code": 200
@@ -698,6 +683,13 @@ var post = {
 }
 
 
+
+
+var mysql = require('./config/mysql.js')
+
+var post = require('./modules/Post.js')
+
+
 function postsInit() {
 	ig.media_popular(function(err, medias, remaining, limit) {
 		console.log(medias, remaining, limit);
@@ -713,3 +705,10 @@ postsInit();
 //   console.log(res)
 // })
 
+function postsInit() {
+  post.getPostsFromIG(function(err, res){
+    console.log(res)
+  })
+}
+
+postsInit()
