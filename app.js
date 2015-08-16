@@ -698,46 +698,18 @@ var post = {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function postsInit() {
-	// ig.media_popular(function(err, medias, remaining, limit) {
-	// 	console.log(medias);
-	// })
-
-	ig.media('6bwJsYwzGq', function(err, media, remaining, limit) {
-		console.log(media)
+	ig.media_popular(function(err, medias, remaining, limit) {
+		console.log(medias, remaining, limit);
 	})
+
+
 }
 
 postsInit();
 
 
-mysql.conn.query('select * from Instagram.posts', function(err, res) {
-  console.log(res)
-})
+// mysql.conn.query('select * from Instagram.posts', function(err, res) {
+//   console.log(res)
+// })
 
