@@ -682,7 +682,8 @@ var post2 = {
     }
 }
 
-var user = { username: 'jimmylabeeu',
+
+var instauser = { username: 'jimmylabeeu',
   bio: 'Les photos ! Les vidéos !',
   website: '',
   profile_picture: 'https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-19/s150x150/11419213_1077420388935498_1644787185_a.jpg',
@@ -735,6 +736,7 @@ function getUser(user_id, cb) {
 		}
 	})
 };
+
 function control(media, final_cb) {
 	async.waterfall([
 	    function(callback) {
@@ -770,12 +772,19 @@ function control(media, final_cb) {
 
 }
 function postsInit() {
+
   // post.getPostsFromIG(function(err, res){
   //   if (err) {
   //   	console.log("ERROR");
   //   } else {
   //   	console.log(res);
   var res = posts;
+
+  post.getPostsFromIG(function(err, res){
+    if (err) {
+    	console.log("ERROR");
+    } else {
+    	console.log(res);
     	for (var i = 0; i < res.length; i++) {
     		if (res[i].tags.length > 0) {
     			control(res[i], function(err, res) {
@@ -786,6 +795,17 @@ function postsInit() {
     	}
   //   }
   // })
+
+    }
+  })
+
+
+// posts.forEach(function(instapost) {
+//   post.insertPost(instapost, {id : 1, followers : 10}, function(err, res){
+
+//   })
+// })
+
 
 }
 
