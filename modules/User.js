@@ -8,7 +8,7 @@ function User() {
 
   return {
   	getUserFromIG : function(user_id, cb) {
-  		ig.user('user_id', function(err, result, remaining, limit) {
+  		ig.user(user_id, function(err, result, remaining, limit) {
   			if (err) {
   				console.log("Error while getting user information from Instagram: ", err);
   				cb(err, null);

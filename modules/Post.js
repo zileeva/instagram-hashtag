@@ -6,6 +6,19 @@ var mysql = require('../config/mysql.js');
 
 function Posts() {
   return {
+
+    getPostsByLocations : function(callback) {
+      /* OPTIONS: { [min_timestamp], [max_timestamp], [distance] }; */
+      var options = {distance: 5000};
+      ig.media_search(42.340013, -71.089161, [options], function(err, medias, remaining, limit) {
+        if (err) {
+          console.log(err);
+          callback(err, null);
+        } else {
+          callback(null, medias);
+        }
+      });
+    },
     getPostsFromIG : function(callback) {
       ig.media_popular(function(err, medias, remaining, limit) {
         if (err) {
