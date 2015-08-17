@@ -1800,24 +1800,26 @@ function postsInit() {
   //   	console.log(res);
   var res = posts;
 
-  post.getPostsByLocations(function(err, res){
+  post.getPostsByLocations(function (err, res) {
     if (err) {
-    	console.log("ERROR");
+      console.log("ERROR");
     } else {
-    	for (var i = 0; i < res.length; i++) {
-    		if (res[i].tags.length > 0) {
-    			control(res[i], function(err, res) {
+      for (var i = 0; i < res.length; i++) {
+        if (res[i].tags.length > 0) {
+          control(res[i], function (err, res) {
             if (err) {
               console.log(err)
               throw err
             }
-    			})
-    		}
+          })
+        }
         else {
           console.log('no tags')
         }
+      }
     }
   })
+}
 
   // post.getPostsFromIG(function(err, res){
   //   if (err) {
@@ -1842,7 +1844,5 @@ function postsInit() {
   // })
 
 
-
-}
 
 postsInit();

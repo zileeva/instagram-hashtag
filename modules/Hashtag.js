@@ -12,7 +12,6 @@ function Hashtag() {
 
 
   Hashtag.fight = function(hashtag, media, final_cb) {
-    console.log(hashtag, 'text')
       async.waterfall([
           function(callback) {
             Hashtag.insertHashtag(hashtag, function(err, res) {
@@ -54,21 +53,26 @@ function Hashtag() {
                 callback(err)
               }
               else {
-                callback(null, tag, media);
+                callback(null, tag, media, res.affectedRows);
               }
             })
           },
-          function(tag, media, callback) {
-            var score = Hashtag.scoreHashtag(tag, media);
-            Hashtag.updateHashtagScore(tag, score, function(err, res) {
-              if (err) {
-                console.log(err);
-                callback(err)
-              }
-              else {
-                callback(null, tag);
-              }
-            })
+          function(tag, media, affectedRows, callback) {
+
+            if (affectedRows === 0) {
+              callback(null, tag)
+            } else {
+              var score = Hashtag.scoreHashtag(tag, media);
+              Hashtag.updateHashtagScore(tag, score, function (err, res) {
+                if (err) {
+                  console.log(err);
+                  callback(err)
+                }
+                else {
+                  callback(null, tag);
+                }
+              })
+            }
           }
       ],
       function(err, results) {

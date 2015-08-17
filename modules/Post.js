@@ -9,8 +9,14 @@ function Posts() {
 
     getPostsByLocations : function(callback) {
       /* OPTIONS: { [min_timestamp], [max_timestamp], [distance] }; */
-      var options = {distance: 5000};
-      ig.media_search(42.340013, -71.089161, [options], function(err, medias, remaining, limit) {
+      var today = new Date();
+
+      var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+      var twoWeeksAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 21);
+
+      var options = {distance: 5000, max_timestamp : lastWeek.getTime()/1000};
+
+      ig.media_search(42.340013, -71.089161, options, function(err, medias, remaining, limit) {
         if (err) {
           console.log(err);
           callback(err, null);
@@ -87,7 +93,7 @@ function Posts() {
     },
     insertPostHashtag : function(postID, HashtagID, callback) {
       mysql.conn.query('INSERT IGNORE INTO Instagram.post_hashtags ' +
-      '(post_id,hashtag_id) VALUES (?,?)', [postID, HashtagID], function(err, res) {
+      '(post_id, hashtag_id) VALUES (?,?)', [postID, HashtagID], function(err, res) {
         if (err) {
           console.log(err);
           callback(err, null)
