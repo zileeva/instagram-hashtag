@@ -638,7 +638,7 @@ var posts = [ { attribution: null,
        id: '12884878',
        full_name: 'Marbee Moo, Olive & Taffy' } } ];
 
-var post = {
+var post2 = {
     "meta": {
         "code": 200
     },
@@ -691,6 +691,7 @@ var hashtag = require('./modules/Post.js');
 var user = result('./modules/User.js');
 var async = require('async');
 
+
 // mysql.conn.query('select * from Instagram.posts', function(err, res) {
 //   console.log(res)
 // })
@@ -741,6 +742,7 @@ function postsInit() {
     	}
     }
   })
+
 }
 
 postsInit();
