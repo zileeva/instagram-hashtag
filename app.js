@@ -767,7 +767,7 @@ function control(media, final_cb) {
 	    	})
 	    }
 	], function (err, result) {
-	    final_cb(result);
+	    final_cb(err, result);
 	});
 
 }
@@ -776,11 +776,13 @@ function postsInit() {
     if (err) {
     	console.log("ERROR");
     } else {
-    	console.log(res);
     	for (var i = 0; i < res.length; i++) {
     		if (res[i].tags.length > 0) {
     			control(res[i], function(err, res) {
-    				console.log(res)
+            if (err) {
+              console.log(err)
+              throw err
+            }
     			})
     		}
         else {

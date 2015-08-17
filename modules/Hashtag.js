@@ -79,9 +79,6 @@ function Hashtag() {
 
   Hashtag.hashtagInit = function(post, final_cb) {
     var functions = [];
-
-    //for (var i = 0; i < post.tags.length; i++) {
-
       post.tags.forEach(function(hashtag) {
         functions.push(function(cb) {
           Hashtag.fight(hashtag, post, cb)
@@ -120,6 +117,10 @@ function Hashtag() {
       if (err) {
         console.log(err);
         callback(err, null)
+      }
+      else if (res.length == 0) {
+        console.log(Error('no hashtag found'));
+       callback(Error('no hashtag found'), null);
       }
       else {
         callback(err, res[0])
