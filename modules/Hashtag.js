@@ -78,7 +78,37 @@ function Hashtag() {
           callback(err, res)
         }
       })
+  };
 
+  Hashtag.getHashtag = function (hashtagString, callback) {
+    mysql.conn.query('SELECT * FROM Instagram.hashtag where hashtag = ?', hashtagString, function (err, res) {
+      if (err) {
+        console.log(err);
+        callback(err, null)
+      }
+      else {
+        callback(err, res[0])
+      }
+    })
+  }
+
+  Hashtag.scoreHashtag = function (hashtag, post) {
+    var sumPostScore = hashtag.score * hashtag.timed_used;
+    sumPostScore += post.score;
+    return sumPostScore / (hashtag.times_used + 1)
+  };
+
+  Hashtag.updateHashtagScore = function(hashtag, score, callback) {
+    mysql.conn.query('UPDATE Instagram.hashtag SET score = ?, times_used = times_used + 1 WHERE hashtag = ?', [score, hashtag],
+      function(err, res){
+        if (err) {
+          console.log(err)
+          callback(err, null)
+        }
+        else {
+          callback(err, res)
+        }
+    })
   };
 
   return Hashtag;
