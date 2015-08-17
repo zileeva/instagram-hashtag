@@ -1713,7 +1713,7 @@ var instauser = { username: 'jimmylabeeu',
 
 var mysql = require('./config/mysql.js');
 var post = require('./modules/Post.js');
-var hashtag = require('./modules/Post.js');
+var hashtag = require('./modules/Hashtag.js');
 var user = require('./modules/User.js');
 var async = require('async');
 
@@ -1723,13 +1723,11 @@ var async = require('async');
 // })
 
 function getUser(user_id, cb) {
-	user.getUserFromDb(user_id, function(err, res) {
+	user.getUser(user_id, function(err, res) {
 		if (res) {
-			console.log("Got user from DB: ", err, res);
 			cb(null, res);
 		} else {
 			user.getUserFromIG(user_id, function(err, res) {
-				console.log("Got user from IG: ", res);
 				if (err) {
 					cb(err, null);
 				} else {
@@ -1738,8 +1736,7 @@ function getUser(user_id, cb) {
     						console.log(err);
     						cb(err, null);
     					} else {
-    						user.getUserFromDb(user_id, function(err, res) {
-    							console.log("Got user from DB: ", err, res);
+                user.getUser(user_id, function(err, res) {
     							if (err) {
     								console.log(err);
     								cb(err, null);
@@ -1761,8 +1758,9 @@ function control(media, final_cb) {
 	    function(callback) {
 	    	getUser(media.user.id, function(err, user) {
 	    		if (err) {
+            callback(err, null);
 	    			console.log(err);
-	    		} else if (user) {
+	    		} else {
 	    			callback(null, user);
 	    		}	
 	    	})	        
@@ -1770,27 +1768,30 @@ function control(media, final_cb) {
 	    function(user, callback) {
 	      	post.insertPost(media, user, function(err, res) {
 	      		if (err) {
+              callback(err, null);
 	      			console.log(err);
 	      		} else {
-	      			callback(null, media);
+	      			callback(null);
 	      		}
 	      	})
 	    },
-	    function(media, callback) {
-	    	hashtag.hashtagInit(media, function(err, res) {
+	    function(callback) {
+	    	hashtag.hashtagInit(media, function(err, hashtag) {
 	    		if (err) {
+            callback(err, null);
 	      			console.log(err);
 	      		} else {
-	      			callback(null, 'done');
+	      			callback(null, hashtag);
 	      		}
 	    	})
 	    }
 	], function (err, result) {
-	    final_cb(result);
+	    final_cb(err, result);
 	});
 
 }
 function postsInit() {
+
 
   // post.getPostsFromIG(function(err, res){
   //   if (err) {
@@ -1803,27 +1804,43 @@ function postsInit() {
     if (err) {
     	console.log("ERROR");
     } else {
-    	console.log(res);
-    	// for (var i = 0; i < res.length; i++) {
-    	// 	if (res[i].tags.length > 0) {
-    	// 		control(res[i], function(err, res) {
-    	// 			console.log(res)
-    	// 		})
-    	// 	}
-    		
-    	// }
-  //   }
-  // })
-
+    	for (var i = 0; i < res.length; i++) {
+    		if (res[i].tags.length > 0) {
+    			control(res[i], function(err, res) {
+            if (err) {
+              console.log(err)
+              throw err
+            }
+    			})
+    		}
+        else {
+          console.log('no tags')
+        }
     }
   })
 
+  // post.getPostsFromIG(function(err, res){
+  //   if (err) {
+  //   	console.log("ERROR");
+  //   } else {
+  //   	for (var i = 0; i < res.length; i++) {
+  //   		if (res[i].tags.length > 0) {
+  //   			control(res[i], function(err, res) {
+  //           if (err) {
+  //             console.log(err)
+  //             throw err
+  //           }
+  //   			})
+  //   		}
+  //       else {
+  //         console.log('no tags')
+  //       }
+    		
+  //   	}
 
-// posts.forEach(function(instapost) {
-//   post.insertPost(instapost, {id : 1, followers : 10}, function(err, res){
+  //   }
+  // })
 
-//   })
-// })
 
 
 }

@@ -23,7 +23,7 @@ function User() {
           console.log(err);
           callback(err, null)
         }
-        else if(user.length = 0) {
+        else if(user.length == 0) {
           callback(null, null)
         }
         else {

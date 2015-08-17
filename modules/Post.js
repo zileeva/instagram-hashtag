@@ -25,17 +25,13 @@ function Posts() {
           console.log(err);
           callback(err, null)
         }
-        else if (medias.meta !== 200) {
-          console.log('Error code : ' + medias.meta.code);
-          callback(Error('Error code : ' + medias.meta.code), null)
-        }
         else {
           callback(null, medias)
         }
       })
     },
     getPost : function(instagramPostID, callback) {
-      mysql.conn.query('SELECT * FROM Instagram.posts where instagram_post_id = ?', instagramPostID, function(err, post) {
+      mysql.conn.query('SELECT * FROM Instagram.posts WHERE post_id = ?', instagramPostID, function(err, post) {
         if (err) {
           console.log(err);
           callback(err, null)
@@ -74,7 +70,6 @@ function Posts() {
 
       if (instagramPost.created_time) {
         post.created_date = new Date(instagramPost.created_time * 1000)
-        console.log()
       }
       else {
         post.created_date = null
@@ -90,7 +85,7 @@ function Posts() {
       })
 
     },
-    insertPostHashtags : function(postID, HashtagID, callback) {
+    insertPostHashtag : function(postID, HashtagID, callback) {
       mysql.conn.query('INSERT IGNORE INTO Instagram.post_hashtags ' +
       '(post_id,hashtag_id) VALUES (?,?)', [postID, HashtagID], function(err, res) {
         if (err) {
