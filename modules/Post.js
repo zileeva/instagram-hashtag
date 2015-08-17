@@ -1,4 +1,3 @@
-
 var ig = require('instagram-node').instagram();
 ig.use({ access_token: '1733274060.1fb234f.f33566c1baa44262843c33aaed2857ea' });
 

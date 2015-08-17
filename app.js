@@ -685,30 +685,62 @@ var post = {
 
 
 
-var mysql = require('./config/mysql.js')
-
-var post = require('./modules/Post.js')
-
-
-function postsInit() {
-	ig.media_popular(function(err, medias, remaining, limit) {
-		console.log(medias, remaining, limit);
-	})
-
-
-}
-
-postsInit();
-
+var mysql = require('./config/mysql.js');
+var post = require('./modules/Post.js');
+var hashtag = require('./modules/Post.js');
+var user = result('./modules/User.js');
+var async = require('async');
 
 // mysql.conn.query('select * from Instagram.posts', function(err, res) {
 //   console.log(res)
 // })
+function control(media, final_cb) {
+	async.waterfall([
+	    function(callback) {
+	    	user.getUser(media.user.id, function(err, user) {
+	    		if (err) {
+	    			console.log(err);
+	    		} else if (user) {
+	    			callback(null, user);
+	    		}	
+	    	})	        
+	    },
+	    function(user, callback) {
+	      	post.insertPost(media, user, function(err, res) {
+	      		if (err) {
+	      			console.log(err);
+	      		} else {
+	      			callback(null, media);
+	      		}
+	      	})
+	    },
+	    function(media, callback) {
+	    	hashtag.hashtagInit(media, function(err, res) {
+	    		if (err) {
+	      			console.log(err);
+	      		} else {
+	      			callback(null, 'done');
+	      		}
+	    	})
+	    }
+	], function (err, result) {
+	    final_cb(result);
+	});
 
+}
 function postsInit() {
   post.getPostsFromIG(function(err, res){
-    console.log(res)
+    if (err) {
+    	console.log("ERROR");
+    } else {
+    	console.log(res);
+    	for (var i = 0; i < res.length; i++) {
+    		control(res[i], function(err, res) {
+    			console.log(res)
+    		})
+    	}
+    }
   })
 }
 
-postsInit()
+postsInit();
