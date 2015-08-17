@@ -1,6 +1,8 @@
 var ig = require('instagram-node').instagram();
 ig.use({ access_token: '1733274060.1fb234f.f33566c1baa44262843c33aaed2857ea' });
 var async = require('async');
+var mysql = require('../config/mysql.js');
+
 
 function User() {
   return {
@@ -14,40 +16,50 @@ function User() {
   			}
   		});
   	},
+    getUser : function(instagramUserId, callback) {
+      mysql.conn.query('SELECT * FROM Instagram.users where instagram_user_id = ?', [instagramUserId], function(err, user){
+        if (err) {
+          console.log(err);
+          callback(err, null)
+        }
+        else if(user.length = 0) {
+          callback(null, null)
+        }
+        else {
+          callback(null, user[0])
+        }
+      })
+    },
+    insertUser : function(instagramUser, callback) {
+      var user = {};
+      user.instagram_user_id = instagramUser.id;
+      if (instagramUser.bio == '' || instagramUser.bio === undefined) {
+        user.bio = null
+      }
+      else {
+        user.bio = instagramUser.bio;
+      }
+      if (instagramUser.full_name == '' || instagramUser.full_name === undefined) {
+        user.full_name = null
+      }
+      else {
+        user.full_name = instagramUser.full_name;
+      }
+      user.followers = instagramUser.counts.followed_by;
+      user.following = instagramUser.counts.follows;
+      user.username = instagramUser.username;
 
-    getUser : function(user_id, cb) {
-    	getUserFromDb(user_id, function(err, res) {
-    		if (res) {
-    			console.log("Got user from DB: ", err, res);
-    			cb(null, res);
-    		} else {
-    			getUserFromIG(user_id, function(err, res) {
-    				console.log("Got user from IG: ", res);
-    				if (err) {
-    					cb(err, null);
-    				} else {
-    					insertUser(res, function(err, res) {
-	    					if (err) {
-	    						console.log(err);
-	    						cb(err, null);
-	    					} else {
-	    						getUserFromDb(user_id, function(err, res) {
-	    							console.log("Got user from DB: ", err, res);
-	    							if (err) {
-	    								console.log(err);
-	    								cb(err, null);
-	    							} else {
-	    								cb(null, res);
-	    							}
-	    						})
-	    					}
-    					})
-    				}
-    				
-    			})
-    		}
-    	})
+      mysql.conn.query('INSERT IGNORE Instagram.users set ?', [user], function(err, user){
+        if (err) {
+          console.log(err);
+          callback(err, null)
+        }
+        else {
+          callback(null, user[0])
+        }
+      })
     }
+
   }
 }
 

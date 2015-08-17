@@ -683,18 +683,22 @@ var post2 = {
 }
 
 
-
+var instauser = { username: 'jimmylabeeu',
+  bio: 'Les photos ! Les vidéos !',
+  website: '',
+  profile_picture: 'https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-19/s150x150/11419213_1077420388935498_1644787185_a.jpg',
+  full_name: 'Jimmy Labeeu',
+  counts: { media: 1158, followed_by: 376483, follows: 246 },
+  id: '376027101' };
 
 var mysql = require('./config/mysql.js');
 var post = require('./modules/Post.js');
 var hashtag = require('./modules/Post.js');
-var user = result('./modules/User.js');
+var user = require('./modules/User.js');
 var async = require('async');
 
 
-// mysql.conn.query('select * from Instagram.posts', function(err, res) {
-//   console.log(res)
-// })
+
 function control(media, final_cb) {
 	async.waterfall([
 	    function(callback) {
@@ -730,7 +734,7 @@ function control(media, final_cb) {
 
 }
 function postsInit() {
-  post.getPostsFromIG(function(err, res){
+  /*post.getPostsFromIG(function(err, res){
     if (err) {
     	console.log("ERROR");
     } else {
@@ -741,7 +745,14 @@ function postsInit() {
     		})
     	}
     }
+  })*/
+
+
+posts.forEach(function(instapost) {
+  post.insertPost(instapost, {id : 1, followers : 10}, function(err, res){
+
   })
+})
 
 }
 

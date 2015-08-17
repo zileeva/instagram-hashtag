@@ -28,30 +28,30 @@ function Posts() {
           callback(err, null)
         }
         else {
-          callback(null, post)
+          callback(null, post[0])
         }
       })
     },
     insertPost : function(instagramPost, user, callback) {
       var post = {};
-      post.post_id = instagramPost.data.id;
+      post.post_id = instagramPost.id;
       post.user_id = user.id;
-      post.instagram_user_id = instagramPost.data.user.id;
-      if (instagramPost.data.caption) {
-        post.caption = instagramPost.data.caption.text
-      }
-      else {
+      post.instagram_user_id = instagramPost.user.id;
+      if (instagramPost.caption == null) {
         post.caption = null
       }
-      post.filter_type = instagramPost.data.filter;
-      if (instagramPost.data.likes) {
-        post.likes_count = instagramPost.data.likes.count;
+      else {
+        post.caption = instagramPost.caption.text
+      }
+      post.filter_type = instagramPost.filter;
+      if (instagramPost.likes) {
+        post.likes_count = instagramPost.likes.count;
       }
       else {
         post.likes_count = 0;
       }
-      if (instagramPost.data.comments) {
-        post.comment_count = instagramPost.data.comments.count;
+      if (instagramPost.comments) {
+        post.comment_count = instagramPost.comments.count;
       }
       else {
         post.comment_count = 0;
@@ -59,8 +59,8 @@ function Posts() {
       post.score = (post.likes_count + 2 * post.comment_count) / user.followers;
 
 
-      if (instagramPost.data.created_time) {
-        post.created_date = new Date(instagramPost.data.created_time * 1000)
+      if (instagramPost.created_time) {
+        post.created_date = new Date(instagramPost.created_time * 1000)
         console.log()
       }
       else {
