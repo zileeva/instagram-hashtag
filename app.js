@@ -682,23 +682,63 @@ var post2 = {
     }
 }
 
-
+var user = { username: 'jimmylabeeu',
+  bio: 'Les photos ! Les vidéos !',
+  website: '',
+  profile_picture: 'https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-19/s150x150/11419213_1077420388935498_1644787185_a.jpg',
+  full_name: 'Jimmy Labeeu',
+  counts: { media: 1158, followed_by: 376483, follows: 246 },
+  id: '376027101' };
 
 
 var mysql = require('./config/mysql.js');
 var post = require('./modules/Post.js');
 var hashtag = require('./modules/Post.js');
-var user = result('./modules/User.js');
+var user = require('./modules/User.js');
 var async = require('async');
 
 
 // mysql.conn.query('select * from Instagram.posts', function(err, res) {
 //   console.log(res)
 // })
+
+function getUser(user_id, cb) {
+	user.getUserFromDb(user_id, function(err, res) {
+		if (res) {
+			console.log("Got user from DB: ", err, res);
+			cb(null, res);
+		} else {
+			user.getUserFromIG(user_id, function(err, res) {
+				console.log("Got user from IG: ", res);
+				if (err) {
+					cb(err, null);
+				} else {
+					user.insertUser(res, function(err, res) {
+    					if (err) {
+    						console.log(err);
+    						cb(err, null);
+    					} else {
+    						user.getUserFromDb(user_id, function(err, res) {
+    							console.log("Got user from DB: ", err, res);
+    							if (err) {
+    								console.log(err);
+    								cb(err, null);
+    							} else {
+    								cb(null, res);
+    							}
+    						})
+    					}
+					})
+				}
+				
+			})
+		}
+	})
+};
 function control(media, final_cb) {
 	async.waterfall([
 	    function(callback) {
-	    	user.getUser(media.user.id, function(err, user) {
+	    	getUser(media.user.id, function(err, user) {
 	    		if (err) {
 	    			console.log(err);
 	    		} else if (user) {
@@ -730,18 +770,22 @@ function control(media, final_cb) {
 
 }
 function postsInit() {
-  post.getPostsFromIG(function(err, res){
-    if (err) {
-    	console.log("ERROR");
-    } else {
-    	console.log(res);
+  // post.getPostsFromIG(function(err, res){
+  //   if (err) {
+  //   	console.log("ERROR");
+  //   } else {
+  //   	console.log(res);
+  var res = posts;
     	for (var i = 0; i < res.length; i++) {
-    		control(res[i], function(err, res) {
-    			console.log(res)
-    		})
+    		if (res[i].tags.length > 0) {
+    			control(res[i], function(err, res) {
+    				console.log(res)
+    			})
+    		}
+    		
     	}
-    }
-  })
+  //   }
+  // })
 
 }
 
