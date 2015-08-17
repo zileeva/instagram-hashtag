@@ -12,11 +12,12 @@ function Posts() {
       var today = new Date();
 
       var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-      var twoWeeksAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 21);
+      var yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
 
-      var options = {distance: 5000, max_timestamp : lastWeek.getTime()/1000};
+      var options = {distance: 5000, max_timestamp : yesterday.getTime()/1000, min_timestamp : lastWeek.getTime()/1000};
 
       ig.media_search(42.340013, -71.089161, options, function(err, medias, remaining, limit) {
+        console.log(err)
         if (err) {
           console.log(err);
           callback(err, null);
