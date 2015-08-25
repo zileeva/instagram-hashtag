@@ -72,7 +72,8 @@ function Posts() {
       else {
         post.comment_count = 0;
       }
-      post.score = (post.likes_count + 2 * post.comment_count) / user.followers;
+
+      post.score = (post.likes_count + 33 * post.comment_count) / Math.log(user.followers);
 
 
       if (instagramPost.created_time) {
@@ -103,7 +104,11 @@ function Posts() {
           callback(null, res)
         }
       })
+    },
+    updatePostHashTagScore :  function(callback) {
+      mysql.conn.query('SELECT * FROM posts ')
     }
+
   }
 }
 

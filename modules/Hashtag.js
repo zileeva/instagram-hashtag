@@ -151,6 +151,31 @@ function Hashtag() {
     })
   };
 
+  Hashtag.topHashtags = function(callback) {
+    mysql.conn.query('SELECT hashtag, score FROM Instagram.hashtags  ORDER BY score  DESC LIMIT 10', function(err, res){
+      if (err) {
+        console.log(err);
+        callback(err, null)
+      }
+      else {
+        callback(err, res)
+      }
+    })
+  };
+
+  Hashtag.topHashtagsMinUsedTimes = function(minUsedTimes, callback) {
+    mysql.conn.query('SELECT hashtag, score, times_used FROM Instagram.hashtags WHERE times_used > ? ORDER BY score DESC LIMIT 10', minUsedTimes,
+      function(err, res){
+      if (err) {
+        console.log(err);
+        callback(err, null)
+      }
+      else {
+        callback(err, res)
+      }
+    })
+  };
+
   return Hashtag;
 
 }
