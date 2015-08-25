@@ -3,10 +3,15 @@ ig.use({ access_token: '1733274060.1fb234f.f33566c1baa44262843c33aaed2857ea' });
 var mysql = require('../config/mysql.js');
 
 
-
+/**
+ *A Post Object to Represent a Post Object
+ */
 function Posts() {
   return {
-
+    /**
+     * gets Posts from Instagram around Boston in the last 6 days
+     * @param callback callback
+     */
     getPostsByLocations : function(callback) {
       /* OPTIONS: { [min_timestamp], [max_timestamp], [distance] }; */
       var today = new Date();
@@ -26,6 +31,10 @@ function Posts() {
         }
       });
     },
+    /**
+     * gets the most popular from Instagram currently
+     * @param callback callback
+     */
     getPostsFromIG : function(callback) {
       ig.media_popular(function(err, medias, remaining, limit) {
         if (err) {
@@ -37,6 +46,11 @@ function Posts() {
         }
       })
     },
+    /**
+     * gets a Post from the DB
+     * @param instagramPostID Instagram Post ID
+     * @param callback callback
+     */
     getPost : function(instagramPostID, callback) {
       mysql.conn.query('SELECT * FROM Instagram.posts WHERE post_id = ?', instagramPostID, function(err, post) {
         if (err) {
@@ -48,6 +62,12 @@ function Posts() {
         }
       })
     },
+    /**
+     * Inserts Post in DB for the first time, If already present does nothing
+     * @param instagramPost Instagram Post
+     * @param user User Object
+     * @param callback callback
+     */
     insertPost : function(instagramPost, user, callback) {
       var post = {};
       post.post_id = instagramPost.id;
@@ -93,6 +113,12 @@ function Posts() {
       })
 
     },
+    /**
+     * Inserts a connection between 1 hastag and the post that it belongs to
+     * @param postID Post Object ID
+     * @param HashtagID Hashtag Object ID
+     * @param callback callback
+     */
     insertPostHashtag : function(postID, HashtagID, callback) {
       mysql.conn.query('INSERT IGNORE INTO Instagram.post_hashtags ' +
       '(post_id, hashtag_id) VALUES (?,?)', [postID, HashtagID], function(err, res) {
@@ -104,11 +130,7 @@ function Posts() {
           callback(null, res)
         }
       })
-    },
-    updatePostHashTagScore :  function(callback) {
-      mysql.conn.query('SELECT * FROM posts ')
     }
-
   }
 }
 

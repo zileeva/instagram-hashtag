@@ -6,28 +6,34 @@ var hashtag = require('./modules/Hashtag.js');
 var user = require('./modules/User.js');
 var async = require('async');
 
+// to run node app.js
 
-
-function getUser(user_id, cb) {
-	user.getUser(user_id, function(err, res) {
+/**
+ * Gets the user either from Instagram or our database depending on
+ * whether we have previously made an insert
+ * @param instagramUserID instagram user id
+ * @param callback callback
+ */
+function getUser(instagramUserID, callback) {
+	user.getUser(instagramUserID, function(err, res) {
 		if (res) {
-			cb(null, res);
+			callback(null, res);
 		} else {
-			user.getUserFromIG(user_id, function(err, res) {
+			user.getUserFromIG(instagramUserID, function(err, res) {
 				if (err) {
-					cb(err, null);
+					callback(err, null);
 				} else {
 					user.insertUser(res, function(err, res) {
     					if (err) {
     						console.log(err);
-    						cb(err, null);
+    						callback(err, null);
     					} else {
-                user.getUser(user_id, function(err, res) {
+                user.getUser(instagramUserID, function(err, res) {
     							if (err) {
     								console.log(err);
-    								cb(err, null);
+    								callback(err, null);
     							} else {
-    								cb(null, res);
+    								callback(null, res);
     							}
     						})
     					}
@@ -39,10 +45,15 @@ function getUser(user_id, cb) {
 	})
 };
 
-function control(media, final_cb) {
+/**
+ * Main function to get user, insert/score the post and insert/score hashtag
+ * @param instagramPost Instagram post
+ * @param callback callback
+ */
+function control(instagramPost, callback) {
 	async.waterfall([
 	    function(callback) {
-	    	getUser(media.user.id, function(err, user) {
+	    	getUser(instagramPost.user.id, function(err, user) {
 	    		if (err) {
             callback(err, null);
 	    			console.log(err);
@@ -52,7 +63,7 @@ function control(media, final_cb) {
 	    	})	        
 	    },
 	    function(user, callback) {
-	      	post.insertPost(media, user, function(err, res) {
+	      	post.insertPost(instagramPost, user, function(err, res) {
 	      		if (err) {
               callback(err, null);
 	      			console.log(err);
@@ -62,7 +73,7 @@ function control(media, final_cb) {
 	      	})
 	    },
 	    function(callback) {
-	    	hashtag.hashtagInit(media, function(err, hashtag) {
+	    	hashtag.hashtagInit(instagramPost, function(err, hashtag) {
 	    		if (err) {
             callback(err, null);
 	      			console.log(err);
@@ -72,14 +83,20 @@ function control(media, final_cb) {
 	    	})
 	    }
 	], function (err, result) {
-	    final_cb(err, result);
+	    callback(err, result);
 	});
 
 }
+
+/**
+ * main function to call to get new posts as well as display the top hashtags
+ * (Asynchronously)
+ */
 function postsInit() {
   post.getPostsByLocations(function (err, res) {
     if (err) {
       console.log("ERROR");
+      console.log(err);
     } else {
       for (var i = 0; i < res.length; i++) {
         if (res[i].tags.length > 0) {
@@ -116,7 +133,5 @@ function postsInit() {
     }
   })
 }
-
-
 
 postsInit();
